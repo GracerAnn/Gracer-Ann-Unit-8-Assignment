@@ -2,11 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'api_exception.dart';
 
-const cmsUrl = String.fromEnvironment(
-  'CMS_URL',
-  defaultValue: 'http://localhost:1337',
-);
-const cmsToken = String.fromEnvironment('CMS_TOKEN');
+const contentfulSpace = String.fromEnvironment('CONTENTFUL_SPACE');
+const contentfulToken = String.fromEnvironment('CONTENTFUL_TOKEN');
 
 class Pick {
   final String title;
@@ -23,7 +20,7 @@ class Pick {
 
   factory Pick.fromJson(Map<String, dynamic> json) {
     // Strapi 5 puts fields directly on the item; Strapi 4 nests them in "attributes".
-    final data = (json['attributes'] as Map<String, dynamic>?) ?? json;
+    final data = (json['fields'] as Map<String, dynamic>?) ?? json;
     return Pick(
       title: data['title'] as String? ?? '',
       kind: data['kind'] as String? ?? 'book',
@@ -37,20 +34,20 @@ abstract interface class PickSource {
   Future<List<Pick>> fetchPicks();
 }
 
-class StrapiPickSource implements PickSource {
+class ContentfulPickSource implements PickSource {
   @override
   Future<List<Pick>> fetchPicks() async {
-    final response = await http.get(
-      Uri.parse('$cmsUrl/api/picks'),
-      headers: {
-        if (cmsToken.isNotEmpty) 'Authorization': 'Bearer $cmsToken',
-      },
+    final uri = Uri.https(
+      'cdn.contentful.com',
+      '/spaces/$contentfulSpace/environments/master/entries',
+      {'content_type': 'pick', 'access_token': contentfulToken},
     );
+    final response = await http.get(uri);
     if (response.statusCode != 200) {
       throw ApiException('CMS error (${response.statusCode})');
     }
     final json = jsonDecode(response.body) as Map<String, dynamic>;
-    final items = json['data'] as List<dynamic>;
+    final items = json['items'] as List<dynamic>;
     return [for (final i in items) Pick.fromJson(i as Map<String, dynamic>)];
   }
 }

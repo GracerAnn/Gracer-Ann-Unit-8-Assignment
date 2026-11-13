@@ -12,7 +12,7 @@ class PicksTab extends StatefulWidget {
 }
 
 class _PicksTabState extends State<PicksTab> {
-  final PickSource source = StrapiPickSource();
+  final PickSource source = ContentfulPickSource();  
   late Future<List<Pick>> _picks;
 
   @override

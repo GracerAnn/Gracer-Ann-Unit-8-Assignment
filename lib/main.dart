@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Unit 7 Exercise',
+      title: 'Gracer Ann Profile',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(colorSchemeSeed: Colors.indigo),
       home: const HomeShell(),
