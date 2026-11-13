@@ -10,6 +10,8 @@ name: Deploy to GitHub Pages
 on:
   # TODO C1: run on every push to the main branch, and also by hand
   # (workflow_dispatch:).
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
